@@ -17,3 +17,4 @@ A Flutter-based service provider platform app for connecting customers with veri
 - Implement Hive storage adapters
 - Build UI screens for each feature
 - Prepare for Firebase integration
+# nconnect
