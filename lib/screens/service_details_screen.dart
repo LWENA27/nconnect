@@ -31,13 +31,19 @@ class ServiceDetailsScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(service.description, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                  Text(
+                    service.description,
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
                   SizedBox(height: 8),
                   Row(
                     children: [
                       Icon(Icons.attach_money, color: Colors.blue),
                       SizedBox(width: 4),
-                      Text('Rate: ${service.rate.toStringAsFixed(2)}', style: TextStyle(color: Colors.blue)),
+                      Text(
+                        'Rate: ${service.rate.toStringAsFixed(2)}',
+                        style: TextStyle(color: Colors.blue),
+                      ),
                     ],
                   ),
                   SizedBox(height: 8),
@@ -50,9 +56,15 @@ class ServiceDetailsScreen extends StatelessWidget {
                   ),
                   SizedBox(height: 16),
                   ElevatedButton.icon(
-                    style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue,
+                    ),
                     onPressed: () {
-                      Navigator.pushNamed(context, '/booking', arguments: service);
+                      Navigator.pushNamed(
+                        context,
+                        '/booking',
+                        arguments: service,
+                      );
                     },
                     icon: Icon(Icons.book_online),
                     label: Text('Book Service'),

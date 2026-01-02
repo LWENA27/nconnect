@@ -73,9 +73,11 @@ class _LoginScreenState extends State<LoginScreen> {
           children: [
             DropdownButton<String>(
               value: role,
-              items: ['Admin', 'Professional', 'Customer']
-                  .map((r) => DropdownMenuItem(value: r, child: Text(r)))
-                  .toList(),
+              items: [
+                'Admin',
+                'Professional',
+                'Customer',
+              ].map((r) => DropdownMenuItem(value: r, child: Text(r))).toList(),
               onChanged: (val) {
                 setState(() => role = val!);
               },
@@ -103,10 +105,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: Text('Register'),
                 ),
                 SizedBox(width: 16),
-                ElevatedButton(
-                  onPressed: _loginUser,
-                  child: Text('Login'),
-                ),
+                ElevatedButton(onPressed: _loginUser, child: Text('Login')),
               ],
             ),
           ],

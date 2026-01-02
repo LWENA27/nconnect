@@ -34,6 +34,15 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
         backgroundColor: Colors.white,
         foregroundColor: Colors.blue,
         elevation: 1,
+        actions: [
+          IconButton(
+            icon: Icon(Icons.logout, color: Colors.red),
+            onPressed: () {
+              Navigator.pushReplacementNamed(context, '/login');
+            },
+            tooltip: 'Logout',
+          ),
+        ],
       ),
       body: Container(
         color: Colors.grey[100],
@@ -47,9 +56,15 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
               elevation: 2,
               child: ListTile(
                 leading: Icon(Icons.monetization_on, color: Colors.blue),
-                title: Text('Transaction: ${tx.transactionId}', style: TextStyle(fontWeight: FontWeight.bold)),
+                title: Text(
+                  'Transaction: ${tx.transactionId}',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
                 subtitle: Text('Status: ${tx.status}'),
-                trailing: Text('Amount: ${tx.amount.toStringAsFixed(2)}', style: TextStyle(color: Colors.blue)),
+                trailing: Text(
+                  'Amount: ${tx.amount.toStringAsFixed(2)}',
+                  style: TextStyle(color: Colors.blue),
+                ),
               ),
             );
           },

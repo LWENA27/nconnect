@@ -34,6 +34,15 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
         backgroundColor: Colors.white,
         foregroundColor: Colors.blue,
         elevation: 1,
+        actions: [
+          IconButton(
+            icon: Icon(Icons.logout, color: Colors.red),
+            onPressed: () {
+              Navigator.pushReplacementNamed(context, '/login');
+            },
+            tooltip: 'Logout',
+          ),
+        ],
       ),
       body: Container(
         color: Colors.grey[100],
@@ -55,7 +64,9 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
                         children: [
                           TextField(
                             controller: ratingController,
-                            decoration: InputDecoration(labelText: 'Rating (1-5)'),
+                            decoration: InputDecoration(
+                              labelText: 'Rating (1-5)',
+                            ),
                             keyboardType: TextInputType.number,
                           ),
                           TextField(
@@ -65,17 +76,23 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
                         ],
                       ),
                       actions: [
-                        TextButton(onPressed: () => Navigator.pop(context), child: Text('Cancel')),
+                        TextButton(
+                          onPressed: () => Navigator.pop(context),
+                          child: Text('Cancel'),
+                        ),
                         ElevatedButton(
                           onPressed: () async {
                             final review = Review(
-                              reviewId: DateTime.now().millisecondsSinceEpoch.toString(),
+                              reviewId: DateTime.now().millisecondsSinceEpoch
+                                  .toString(),
                               bookingId: 'demo_booking',
                               rating: int.tryParse(ratingController.text) ?? 5,
                               comment: commentController.text,
                               response: null,
                             );
-                            var box = await Hive.openBox<Review>(HiveBoxes.reviewBox);
+                            var box = await Hive.openBox<Review>(
+                              HiveBoxes.reviewBox,
+                            );
                             await box.put(review.reviewId, review);
                             Navigator.pop(context);
                             setState(() => reviews.add(review));
@@ -101,9 +118,14 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
                     elevation: 2,
                     child: ListTile(
                       leading: Icon(Icons.star, color: Colors.amber),
-                      title: Text('Rating: ${review.rating}', style: TextStyle(fontWeight: FontWeight.bold)),
+                      title: Text(
+                        'Rating: ${review.rating}',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
                       subtitle: Text(review.comment),
-                      trailing: review.response != null ? Text('Response: ${review.response}') : null,
+                      trailing: review.response != null
+                          ? Text('Response: ${review.response}')
+                          : null,
                     ),
                   );
                 },

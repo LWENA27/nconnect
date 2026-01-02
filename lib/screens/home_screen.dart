@@ -19,13 +19,20 @@ class _HomeScreenState extends State<HomeScreen> {
   String selectedCategory = 'All';
   double maxPrice = 10000;
 
-  List<String> get categories => ['All', ...{...services.map((s) => s.category)}];
+  List<String> get categories => [
+    'All',
+    ...{...services.map((s) => s.category)},
+  ];
 
   List<Service> get filteredServices {
     return services.where((s) {
-      final matchesCategory = selectedCategory == 'All' || s.category == selectedCategory;
+      final matchesCategory =
+          selectedCategory == 'All' || s.category == selectedCategory;
       final matchesPrice = s.rate <= maxPrice;
-      final matchesSearch = searchQuery.isEmpty || s.category.toLowerCase().contains(searchQuery.toLowerCase()) || s.description.toLowerCase().contains(searchQuery.toLowerCase());
+      final matchesSearch =
+          searchQuery.isEmpty ||
+          s.category.toLowerCase().contains(searchQuery.toLowerCase()) ||
+          s.description.toLowerCase().contains(searchQuery.toLowerCase());
       return matchesCategory && matchesPrice && matchesSearch;
     }).toList();
   }
@@ -60,15 +67,31 @@ class _HomeScreenState extends State<HomeScreen> {
         content: SingleChildScrollView(
           child: Column(
             children: [
-              TextField(controller: categoryController, decoration: InputDecoration(labelText: 'Category')),
-              TextField(controller: descriptionController, decoration: InputDecoration(labelText: 'Description')),
-              TextField(controller: rateController, decoration: InputDecoration(labelText: 'Rate'), keyboardType: TextInputType.number),
-              TextField(controller: availabilityController, decoration: InputDecoration(labelText: 'Availability')),
+              TextField(
+                controller: categoryController,
+                decoration: InputDecoration(labelText: 'Category'),
+              ),
+              TextField(
+                controller: descriptionController,
+                decoration: InputDecoration(labelText: 'Description'),
+              ),
+              TextField(
+                controller: rateController,
+                decoration: InputDecoration(labelText: 'Rate'),
+                keyboardType: TextInputType.number,
+              ),
+              TextField(
+                controller: availabilityController,
+                decoration: InputDecoration(labelText: 'Availability'),
+              ),
             ],
           ),
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: Text('Cancel')),
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('Cancel'),
+          ),
           ElevatedButton(
             onPressed: () async {
               if (currentUser == null) return;
@@ -110,6 +133,13 @@ class _HomeScreenState extends State<HomeScreen> {
         elevation: 1,
         actions: [
           IconButton(
+            icon: Icon(Icons.logout, color: Colors.red),
+            onPressed: () {
+              Navigator.pushReplacementNamed(context, '/login');
+            },
+            tooltip: 'Logout',
+          ),
+          IconButton(
             icon: Icon(Icons.person, color: Colors.blue),
             onPressed: () => Navigator.pushNamed(context, '/profile'),
             tooltip: 'Profile',
@@ -139,10 +169,21 @@ class _HomeScreenState extends State<HomeScreen> {
               Card(
                 margin: EdgeInsets.all(12),
                 child: ListTile(
-                  leading: Icon(Icons.account_circle, color: Colors.blue, size: 40),
-                  title: Text(currentUser!.name, style: TextStyle(fontWeight: FontWeight.bold)),
-                  subtitle: Text('${currentUser!.role} | ${currentUser!.email}'),
-                  trailing: currentUser!.verified ? Icon(Icons.verified, color: Colors.green) : Icon(Icons.error, color: Colors.red),
+                  leading: Icon(
+                    Icons.account_circle,
+                    color: Colors.blue,
+                    size: 40,
+                  ),
+                  title: Text(
+                    currentUser!.name,
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  subtitle: Text(
+                    '${currentUser!.role} | ${currentUser!.email}',
+                  ),
+                  trailing: currentUser!.verified
+                      ? Icon(Icons.verified, color: Colors.green)
+                      : Icon(Icons.error, color: Colors.red),
                 ),
               ),
             Padding(
@@ -154,7 +195,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       decoration: InputDecoration(
                         hintText: 'Search services...',
                         prefixIcon: Icon(Icons.search),
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
                         filled: true,
                         fillColor: Colors.white,
                       ),
@@ -164,7 +207,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   SizedBox(width: 8),
                   DropdownButton<String>(
                     value: selectedCategory,
-                    items: categories.map((c) => DropdownMenuItem(value: c, child: Text(c))).toList(),
+                    items: categories
+                        .map((c) => DropdownMenuItem(value: c, child: Text(c)))
+                        .toList(),
                     onChanged: (val) => setState(() => selectedCategory = val!),
                   ),
                   SizedBox(width: 8),
@@ -173,12 +218,16 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: TextField(
                       decoration: InputDecoration(
                         labelText: 'Max Price',
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
                         filled: true,
                         fillColor: Colors.white,
                       ),
                       keyboardType: TextInputType.number,
-                      onChanged: (val) => setState(() => maxPrice = double.tryParse(val) ?? 10000),
+                      onChanged: (val) => setState(
+                        () => maxPrice = double.tryParse(val) ?? 10000,
+                      ),
                     ),
                   ),
                 ],
@@ -186,21 +235,39 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             Expanded(
               child: filteredServices.isEmpty
-                  ? Center(child: Text('No services found.', style: TextStyle(color: Colors.grey, fontSize: 18)))
+                  ? Center(
+                      child: Text(
+                        'No services found.',
+                        style: TextStyle(color: Colors.grey, fontSize: 18),
+                      ),
+                    )
                   : ListView.separated(
                       itemCount: filteredServices.length,
                       separatorBuilder: (_, __) => Divider(),
                       itemBuilder: (context, index) {
                         final service = filteredServices[index];
                         return Card(
-                          margin: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                          margin: EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 6,
+                          ),
                           child: ListTile(
                             leading: Icon(Icons.work, color: Colors.blue),
-                            title: Text(service.category, style: TextStyle(fontWeight: FontWeight.bold)),
+                            title: Text(
+                              service.category,
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
                             subtitle: Text(service.description),
-                            trailing: Text('${service.rate.toStringAsFixed(2)}', style: TextStyle(color: Colors.blue)),
+                            trailing: Text(
+                              '${service.rate.toStringAsFixed(2)}',
+                              style: TextStyle(color: Colors.blue),
+                            ),
                             onTap: () {
-                              Navigator.pushNamed(context, '/service', arguments: service);
+                              Navigator.pushNamed(
+                                context,
+                                '/service',
+                                arguments: service,
+                              );
                             },
                           ),
                         );

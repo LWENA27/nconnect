@@ -26,6 +26,15 @@ class ProfileScreen extends StatelessWidget {
             backgroundColor: Colors.white,
             foregroundColor: Colors.blue,
             elevation: 1,
+            actions: [
+              IconButton(
+                icon: Icon(Icons.logout, color: Colors.red),
+                onPressed: () {
+                  Navigator.pushReplacementNamed(context, '/login');
+                },
+                tooltip: 'Logout',
+              ),
+            ],
           ),
           body: user == null
               ? Center(child: Text('No user found.'))
@@ -42,19 +51,43 @@ class ProfileScreen extends StatelessWidget {
                           children: [
                             Row(
                               children: [
-                                Icon(Icons.account_circle, color: Colors.blue, size: 40),
+                                Icon(
+                                  Icons.account_circle,
+                                  color: Colors.blue,
+                                  size: 40,
+                                ),
                                 SizedBox(width: 12),
-                                Text(user.name, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                                Text(
+                                  user.name,
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
                               ],
                             ),
                             SizedBox(height: 16),
-                            Text('Email: ${user.email}', style: TextStyle(fontSize: 16)),
-                            Text('Phone: ${user.phone}', style: TextStyle(fontSize: 16)),
-                            Text('Role: ${user.role}', style: TextStyle(fontSize: 16)),
+                            Text(
+                              'Email: ${user.email}',
+                              style: TextStyle(fontSize: 16),
+                            ),
+                            Text(
+                              'Phone: ${user.phone}',
+                              style: TextStyle(fontSize: 16),
+                            ),
+                            Text(
+                              'Role: ${user.role}',
+                              style: TextStyle(fontSize: 16),
+                            ),
                             Row(
                               children: [
-                                Text('Verified: ', style: TextStyle(fontSize: 16)),
-                                user.verified ? Icon(Icons.check, color: Colors.green) : Icon(Icons.error, color: Colors.red),
+                                Text(
+                                  'Verified: ',
+                                  style: TextStyle(fontSize: 16),
+                                ),
+                                user.verified
+                                    ? Icon(Icons.check, color: Colors.green)
+                                    : Icon(Icons.error, color: Colors.red),
                               ],
                             ),
                           ],
