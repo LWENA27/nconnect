@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'models/user_adapter.dart';
 import 'models/service_adapter.dart';
@@ -16,8 +17,14 @@ import 'screens/transactions_screen.dart';
 import 'screens/reviews_screen.dart';
 import 'screens/settings_screen.dart';
 
-void main() async {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  await Supabase.initialize(
+    url: 'https://kkvtntjktvfarcidgggx.supabase.co',
+    anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtrdnRudGprdHZmYXJjaWRnZ2d4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc0Njc3NzUsImV4cCI6MjA4MzA0Mzc3NX0.ZmJ_qKsqG0f9aeywZZQWn8wQpiGJ4jqLnBdLNZAvvcA',
+  );
+
   await Hive.initFlutter();
   Hive.registerAdapter(UserAdapter());
   Hive.registerAdapter(ServiceAdapter());

@@ -1,0 +1,5 @@
+supabase password uPEKD6+%cex5qA#
+
+anon public eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtrdnRudGprdHZmYXJjaWRnZ2d4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc0Njc3NzUsImV4cCI6MjA4MzA0Mzc3NX0.ZmJ_qKsqG0f9aeywZZQWn8wQpiGJ4jqLnBdLNZAvvcA
+
+project url https://kkvtntjktvfarcidgggx.supabase.co

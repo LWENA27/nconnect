@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../models/user_adapter.dart';
 import '../storage/hive_boxes.dart';
@@ -12,54 +13,73 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  String role = 'Customer';
+  final TextEditingController fullNameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  final TextEditingController phoneController = TextEditingController();
   String error = '';
+  final supabase = Supabase.instance.client;
 
   Future<void> _registerUser() async {
+    final fullName = fullNameController.text.trim();
     final email = emailController.text.trim();
-    if (email.isEmpty) {
-      setState(() => error = 'Email required');
+    final password = passwordController.text.trim();
+    final phone = phoneController.text.trim();
+
+    if (fullName.isEmpty || email.isEmpty || password.isEmpty) {
+      setState(() => error = 'Full Name, Email, and Password required');
       return;
     }
-    var box = await Hive.openBox<User>(HiveBoxes.userBox);
-    if (box.values.any((u) => u.email == email)) {
-      setState(() => error = 'User already exists');
-      return;
+
+    try {
+      final AuthResponse res = await supabase.auth.signUp(
+        email: email,
+        password: password,
+      );
+
+      if (res.user != null) {
+        // Store user in Supabase 'users' table
+        await supabase.from('users').insert({
+          'uid': res.user!.id,
+          'full_name': fullName,
+          'email': email,
+          'phone_number': phone,
+        });
+        setState(() => error = '');
+        Navigator.pushReplacementNamed(context, '/home');
+      }
+    } on AuthException catch (e) {
+      setState(() => error = e.message);
+    } catch (e) {
+      setState(() => error = 'An unexpected error occurred: ${e.toString()}');
     }
-    final user = User(
-      uid: DateTime.now().millisecondsSinceEpoch.toString(),
-      role: role,
-      name: email.split('@')[0],
-      email: email,
-      phone: '',
-      verified: role == 'Customer',
-    );
-    await box.put(user.uid, user);
-    setState(() => error = '');
-    Navigator.pushReplacementNamed(context, '/home');
   }
 
   Future<void> _loginUser() async {
     final email = emailController.text.trim();
-    if (email.isEmpty) {
-      setState(() => error = 'Email required');
+    final password = passwordController.text.trim();
+
+    if (email.isEmpty || password.isEmpty) {
+      setState(() => error = 'Email and Password required');
       return;
     }
-    var box = await Hive.openBox<User>(HiveBoxes.userBox);
-    User? user;
+
     try {
-      user = box.values.firstWhere((u) => u.email == email && u.role == role);
+      final AuthResponse res = await supabase.auth.signInWithPassword(
+        email: email,
+        password: password,
+      );
+
+      if (res.user != null) {
+        // TODO: Verify role from Supabase 'users' table if necessary
+        setState(() => error = '');
+        Navigator.pushReplacementNamed(context, '/home');
+      }
+    } on AuthException catch (e) {
+      setState(() => error = e.message);
     } catch (e) {
-      user = null;
+      setState(() => error = 'An unexpected error occurred: ${e.toString()}');
     }
-    if (user == null) {
-      setState(() => error = 'User not found. Please register.');
-      return;
-    }
-    setState(() => error = '');
-    Navigator.pushReplacementNamed(context, '/home');
   }
 
   @override
@@ -68,47 +88,51 @@ class _LoginScreenState extends State<LoginScreen> {
       appBar: AppBar(title: Text('Login/Register')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            DropdownButton<String>(
-              value: role,
-              items: [
-                'Admin',
-                'Professional',
-                'Customer',
-              ].map((r) => DropdownMenuItem(value: r, child: Text(r))).toList(),
-              onChanged: (val) {
-                setState(() => role = val!);
-              },
-            ),
-            TextField(
-              controller: emailController,
-              decoration: InputDecoration(labelText: 'Email'),
-            ),
-            TextField(
-              controller: passwordController,
-              decoration: InputDecoration(labelText: 'Password'),
-              obscureText: true,
-            ),
-            if (error.isNotEmpty)
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8.0),
-                child: Text(error, style: TextStyle(color: Colors.red)),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              TextField(
+                controller: fullNameController,
+                decoration: InputDecoration(labelText: 'Full Name'),
               ),
-            SizedBox(height: 16),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ElevatedButton(
-                  onPressed: _registerUser,
-                  child: Text('Register'),
+              SizedBox(height: 12),
+              TextField(
+                controller: emailController,
+                decoration: InputDecoration(labelText: 'Email'),
+                keyboardType: TextInputType.emailAddress,
+              ),
+              SizedBox(height: 12),
+              TextField(
+                controller: phoneController,
+                decoration: InputDecoration(labelText: 'Phone Number'),
+                keyboardType: TextInputType.phone,
+              ),
+              SizedBox(height: 12),
+              TextField(
+                controller: passwordController,
+                decoration: InputDecoration(labelText: 'Password'),
+                obscureText: true,
+              ),
+              if (error.isNotEmpty)
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: Text(error, style: TextStyle(color: Colors.red)),
                 ),
-                SizedBox(width: 16),
-                ElevatedButton(onPressed: _loginUser, child: Text('Login')),
-              ],
-            ),
-          ],
+              SizedBox(height: 16),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ElevatedButton(
+                    onPressed: _registerUser,
+                    child: Text('Register'),
+                  ),
+                  SizedBox(width: 16),
+                  ElevatedButton(onPressed: _loginUser, child: Text('Login')),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
