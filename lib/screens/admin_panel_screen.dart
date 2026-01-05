@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
-import '../models/service_adapter.dart';
 import '../models/user_adapter.dart';
 import '../models/booking_adapter.dart';
 import '../storage/hive_boxes.dart';

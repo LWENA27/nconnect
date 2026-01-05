@@ -4,7 +4,7 @@ A Flutter-based service provider platform app for connecting customers with veri
 
 ## Features
 - User roles: Admin, Professional, Customer
-- Service discovery, booking, escrow payments
+- Service discovery, booking(order), professional accept order, escrow payments,customer waits for task to be completed and submitted by professional, After customer receives the submitted task  by professional then confirms, then admin approves/release the payments to the professional. the task
 - Local storage for all data (models: User, Service, Booking, Transaction, Review)
 - Ready for future migration to Firebase
 

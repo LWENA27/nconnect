@@ -9,6 +9,7 @@ import 'models/review_adapter.dart';
 import 'screens/splash_screen.dart';
 import 'screens/login_screen.dart';
 import 'screens/home_screen.dart';
+import 'screens/customer_dashboard_screen.dart';
 import 'screens/service_details_screen.dart';
 import 'screens/booking_screen.dart';
 import 'screens/profile_screen.dart';
@@ -16,6 +17,8 @@ import 'screens/admin_panel_screen.dart';
 import 'screens/transactions_screen.dart';
 import 'screens/reviews_screen.dart';
 import 'screens/settings_screen.dart';
+import 'screens/professional_dashboard_screen.dart';
+import 'screens/role_selection_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -50,13 +53,24 @@ class MyApp extends StatelessWidget {
         '/': (context) => SplashScreen(),
         '/login': (context) => LoginScreen(),
         '/home': (context) => HomeScreen(),
-        '/service': (context) => ServiceDetailsScreen(),
+        '/customer-dashboard': (context) => const CustomerDashboardScreen(),
         '/booking': (context) => BookingScreen(),
         '/profile': (context) => ProfileScreen(),
         '/admin': (context) => AdminPanelScreen(),
+        '/professional-dashboard': (context) => ProfessionalDashboardScreen(),
+        '/role-selection': (context) => RoleSelectionScreen(),
         '/transactions': (context) => TransactionsScreen(),
         '/reviews': (context) => ReviewsScreen(),
         '/settings': (context) => SettingsScreen(),
+      },
+      onGenerateRoute: (settings) {
+        if (settings.name == '/service-details') {
+          final args = settings.arguments as Map<String, dynamic>;
+          return MaterialPageRoute(
+            builder: (context) => ServiceDetailsScreen(service: args),
+          );
+        }
+        return null;
       },
     );
   }
