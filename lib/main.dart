@@ -6,6 +6,7 @@ import 'models/service_adapter.dart';
 import 'models/booking_adapter.dart';
 import 'models/transaction_adapter.dart';
 import 'models/review_adapter.dart';
+import 'screens/landing_page_screen.dart';
 import 'screens/splash_screen.dart';
 import 'screens/login_screen.dart';
 import 'screens/home_screen.dart';
@@ -48,8 +49,9 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
         useMaterial3: true,
       ),
-      initialRoute: '/',
+      initialRoute: '/landing',
       routes: {
+        '/landing': (context) => const LandingPageScreen(),
         '/': (context) => SplashScreen(),
         '/login': (context) => LoginScreen(),
         '/home': (context) => HomeScreen(),

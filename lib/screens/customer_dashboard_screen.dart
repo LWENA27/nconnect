@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class CustomerDashboardScreen extends StatefulWidget {
-  const CustomerDashboardScreen({Key? key}) : super(key: key);
+  const CustomerDashboardScreen({super.key});
 
   @override
   State<CustomerDashboardScreen> createState() => _CustomerDashboardScreenState();

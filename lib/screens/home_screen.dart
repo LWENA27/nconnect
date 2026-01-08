@@ -213,7 +213,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     onChanged: (val) => setState(() => selectedCategory = val!),
                   ),
                   SizedBox(width: 8),
-                  Container(
+                  SizedBox(
                     width: 100,
                     child: TextField(
                       decoration: InputDecoration(
@@ -259,7 +259,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                             subtitle: Text(service.description),
                             trailing: Text(
-                              '${service.rate.toStringAsFixed(2)}',
+                              service.rate.toStringAsFixed(2),
                               style: TextStyle(color: Colors.blue),
                             ),
                             onTap: () {
@@ -280,8 +280,8 @@ class _HomeScreenState extends State<HomeScreen> {
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.blue,
         onPressed: _showAddServiceDialog,
-        child: Icon(Icons.add, color: Colors.white),
         tooltip: 'Add Service',
+        child: Icon(Icons.add, color: Colors.white),
       ),
     );
   }
