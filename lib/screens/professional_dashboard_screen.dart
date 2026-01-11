@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:hive/hive.dart';
+import '../models/professional_service.dart';
+import 'add_service_screen.dart';
 
 class ProfessionalDashboardScreen extends StatefulWidget {
   const ProfessionalDashboardScreen({super.key});
@@ -40,6 +43,63 @@ class _ProfessionalDashboardScreenState
     } catch (e) {
       print('Error loading user data: $e');
       setState(() => isLoading = false);
+    }
+  }
+
+  List<ProfessionalService> _getUserServices() {
+    final user = supabase.auth.currentUser;
+    if (user == null) return [];
+    
+    try {
+      final servicesBox = Hive.box<ProfessionalService>('professional_services');
+      return servicesBox.values
+          .where((service) => service.providerId == user.id)
+          .toList();
+    } catch (e) {
+      print('Error fetching services: $e');
+      return [];
+    }
+  }
+
+  Future<void> _navigateToAddService() async {
+    final result = await Navigator.push<ProfessionalService>(
+      context,
+      MaterialPageRoute(builder: (context) => const AddServiceScreen()),
+    );
+    
+    if (result != null && mounted) {
+      setState(() {});
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Service "${result.title}" added successfully!'),
+          backgroundColor: Colors.green,
+        ),
+      );
+    }
+  }
+
+  Future<void> _deleteService(String serviceId) async {
+    try {
+      final servicesBox = Hive.box<ProfessionalService>('professional_services');
+      servicesBox.delete(serviceId);
+      setState(() {});
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Service deleted successfully'),
+            backgroundColor: Colors.orange,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error deleting service: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
   }
 
@@ -135,40 +195,7 @@ class _ProfessionalDashboardScreenState
                               ),
                             ),
                             SizedBox(height: 12),
-                            Container(
-                              padding: EdgeInsets.all(16),
-                              decoration: BoxDecoration(
-                                color: Colors.grey[50],
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: Column(
-                                children: [
-                                  Icon(
-                                    Icons.add_circle_outline,
-                                    size: 32,
-                                    color: Colors.blue,
-                                  ),
-                                  SizedBox(height: 8),
-                                  Text(
-                                    'No services added yet',
-                                    style: TextStyle(color: Colors.grey),
-                                  ),
-                                  SizedBox(height: 8),
-                                  ElevatedButton(
-                                    onPressed: () {
-                                      // TODO: Navigate to add service page
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
-                                        SnackBar(
-                                          content: Text('Add service feature'),
-                                        ),
-                                      );
-                                    },
-                                    child: Text('Add Service'),
-                                  ),
-                                ],
-                              ),
-                            ),
+                            _buildServicesSection(),
                           ],
                         ),
                       ),
@@ -177,6 +204,178 @@ class _ProfessionalDashboardScreenState
                 ),
               ),
             ),
+    );
+  }
+
+  Widget _buildServicesSection() {
+    final services = _getUserServices();
+    
+    if (services.isEmpty) {
+      return Container(
+        padding: EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.grey[50],
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Column(
+          children: [
+            Icon(
+              Icons.add_circle_outline,
+              size: 32,
+              color: Colors.blue,
+            ),
+            SizedBox(height: 8),
+            Text(
+              'No services added yet',
+              style: TextStyle(color: Colors.grey),
+            ),
+            SizedBox(height: 8),
+            ElevatedButton.icon(
+              onPressed: _navigateToAddService,
+              icon: Icon(Icons.add),
+              label: Text('Add Service'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.blue,
+                foregroundColor: Colors.white,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return Column(
+      children: [
+        ListView.builder(
+          shrinkWrap: true,
+          physics: NeverScrollableScrollPhysics(),
+          itemCount: services.length,
+          itemBuilder: (context, index) {
+            final service = services[index];
+            return Card(
+              margin: EdgeInsets.only(bottom: 12),
+              child: Padding(
+                padding: EdgeInsets.all(12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: Text(
+                            service.title,
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        Chip(
+                          label: Text(service.status),
+                          backgroundColor: service.status == 'active'
+                              ? Colors.green[200]
+                              : Colors.orange[200],
+                          labelStyle: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 8),
+                    Text(
+                      service.description,
+                      style: TextStyle(fontSize: 12, color: Colors.grey[700]),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    SizedBox(height: 8),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Wrap(
+                          spacing: 8,
+                          children: [
+                            Text(
+                              '${service.deliveryTimeDays}d delivery',
+                              style: TextStyle(fontSize: 11, color: Colors.grey),
+                            ),
+                            Text(
+                              '${service.maxRevisions} revisions',
+                              style: TextStyle(fontSize: 11, color: Colors.grey),
+                            ),
+                          ],
+                        ),
+                        PopupMenuButton(
+                          itemBuilder: (context) => [
+                            PopupMenuItem(
+                              child: Text('View'),
+                              value: 'view',
+                            ),
+                            PopupMenuItem(
+                              child: Text('Edit'),
+                              value: 'edit',
+                            ),
+                            PopupMenuItem(
+                              child: Text('Delete'),
+                              value: 'delete',
+                            ),
+                          ],
+                          onSelected: (value) {
+                            if (value == 'delete') {
+                              showDialog(
+                                context: context,
+                                builder: (context) => AlertDialog(
+                                  title: Text('Delete Service?'),
+                                  content: Text(
+                                    'Are you sure you want to delete "${service.title}"?',
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () => Navigator.pop(context),
+                                      child: Text('Cancel'),
+                                    ),
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.pop(context);
+                                        _deleteService(service.id);
+                                      },
+                                      child: Text(
+                                        'Delete',
+                                        style: TextStyle(color: Colors.red),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            }
+                          },
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        ),
+        SizedBox(height: 12),
+        SizedBox(
+          width: double.infinity,
+          child: ElevatedButton.icon(
+            onPressed: _navigateToAddService,
+            icon: Icon(Icons.add),
+            label: Text('Add Another Service'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.blue,
+              foregroundColor: Colors.white,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

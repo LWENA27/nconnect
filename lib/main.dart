@@ -6,6 +6,9 @@ import 'models/service_adapter.dart';
 import 'models/booking_adapter.dart';
 import 'models/transaction_adapter.dart';
 import 'models/review_adapter.dart';
+import 'models/professional_service.dart';
+import 'models/professional_service_adapter.dart';
+import 'storage/hive_boxes.dart';
 import 'screens/landing_page_screen.dart';
 import 'screens/splash_screen.dart';
 import 'screens/login_screen.dart';
@@ -35,6 +38,30 @@ Future<void> main() async {
   Hive.registerAdapter(BookingAdapter());
   Hive.registerAdapter(TransactionAdapter());
   Hive.registerAdapter(ReviewAdapter());
+  Hive.registerAdapter(ProfessionalServiceAdapter());
+  Hive.registerAdapter(ProfessionalServicePackageAdapter());
+  Hive.registerAdapter(ProfessionalServiceAddonAdapter());
+
+  // Open all Hive boxes if not already open
+  if (!Hive.isBoxOpen(HiveBoxes.userBox)) {
+    await Hive.openBox(HiveBoxes.userBox);
+  }
+  if (!Hive.isBoxOpen(HiveBoxes.serviceBox)) {
+    await Hive.openBox(HiveBoxes.serviceBox);
+  }
+  if (!Hive.isBoxOpen(HiveBoxes.bookingBox)) {
+    await Hive.openBox(HiveBoxes.bookingBox);
+  }
+  if (!Hive.isBoxOpen(HiveBoxes.transactionBox)) {
+    await Hive.openBox(HiveBoxes.transactionBox);
+  }
+  if (!Hive.isBoxOpen(HiveBoxes.reviewBox)) {
+    await Hive.openBox(HiveBoxes.reviewBox);
+  }
+  if (!Hive.isBoxOpen('professional_services')) {
+    await Hive.openBox<ProfessionalService>('professional_services');
+  }
+
   runApp(const MyApp());
 }
 
